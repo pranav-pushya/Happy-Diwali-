@@ -53,7 +53,7 @@
         }
 
         /* Canvas overlay */
-        #fireworksCanvas, #sparklerCanvas {
+        #fireworksCanvas, #petalsCanvas, #sparklerCanvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -63,7 +63,36 @@
         }
 
         #fireworksCanvas { z-index: 10; }
+        #petalsCanvas { z-index: 15; }
         #sparklerCanvas { z-index: 25; }
+
+        /* Rotating Sacred Mandala */
+        .mandala-outer {
+            animation: spinMandalaClockwise 50s linear infinite;
+            transform-origin: 150px 150px;
+        }
+        .mandala-inner {
+            animation: spinMandalaCounter 32s linear infinite;
+            transform-origin: 150px 150px;
+        }
+        .mandala-pulse {
+            animation: mandalaGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes spinMandalaClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spinMandalaCounter {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        @keyframes mandalaGlow {
+            0% { filter: drop-shadow(0 0 12px rgba(255, 190, 0, 0.35)) scale(0.97); opacity: 0.65; }
+            100% { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.75)) scale(1.03); opacity: 0.88; }
+        }
 
         /* Flame Animation */
         .flame-container {
@@ -174,6 +203,7 @@
 
     <!-- Background Canvas Layers -->
     <canvas id="fireworksCanvas"></canvas>
+    <canvas id="petalsCanvas"></canvas>
     <canvas id="sparklerCanvas"></canvas>
 
     <!-- Sky Lanterns Container -->
@@ -226,6 +256,82 @@
         <div class="relative my-4 cursor-pointer group" id="mainDiyaTrigger" title="Click to Light Up & Launch Fireworks!">
             <!-- Glowing Aura Backdrop -->
             <div class="absolute -inset-10 rounded-full diya-aura -z-10"></div>
+            
+            <!-- Rotating Sacred Golden Mandala -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 mandala-pulse">
+                <svg viewBox="0 0 300 300" class="w-72 h-72 sm:w-96 sm:h-96 max-w-none transition-transform duration-500 group-hover:scale-105">
+                    <defs>
+                        <linearGradient id="goldMandalaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFF5C0" />
+                            <stop offset="40%" stop-color="#FFD700" />
+                            <stop offset="70%" stop-color="#DAA520" />
+                            <stop offset="100%" stop-color="#FF8C00" />
+                        </linearGradient>
+                        <linearGradient id="amberMandalaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#FFE066" />
+                            <stop offset="100%" stop-color="#FF9000" />
+                        </linearGradient>
+                        <radialGradient id="mandalaCoreGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="rgba(255, 215, 0, 0.3)" />
+                            <stop offset="80%" stop-color="rgba(255, 140, 0, 0.08)" />
+                            <stop offset="100%" stop-color="rgba(0, 0, 0, 0)" />
+                        </radialGradient>
+                        <!-- Petal Template for 16-petal Outer Ring -->
+                        <g id="outerPetal">
+                            <path d="M 150 14 C 142 38, 140 56, 150 72 C 160 56, 158 38, 150 14 Z" fill="url(#goldMandalaGrad)" fill-opacity="0.12" stroke="url(#goldMandalaGrad)" stroke-width="1.3"/>
+                            <circle cx="150" cy="12" r="2.2" fill="#FFD700"/>
+                        </g>
+                        <!-- Petal Template for 12-petal Inner Ring -->
+                        <g id="innerPetal">
+                            <path d="M 150 68 Q 139 96 150 114 Q 161 96 150 68 Z" fill="url(#amberMandalaGrad)" fill-opacity="0.22" stroke="url(#goldMandalaGrad)" stroke-width="1.1"/>
+                            <circle cx="150" cy="94" r="1.8" fill="#FFF5C0"/>
+                        </g>
+                    </defs>
+
+                    <!-- Outer Clockwise Layer -->
+                    <g class="mandala-outer">
+                        <circle cx="150" cy="150" r="142" fill="none" stroke="url(#goldMandalaGrad)" stroke-width="1.2" stroke-dasharray="4,6" opacity="0.6"/>
+                        <circle cx="150" cy="150" r="128" fill="none" stroke="url(#goldMandalaGrad)" stroke-width="1" opacity="0.5"/>
+                        <circle cx="150" cy="150" r="115" fill="none" stroke="url(#goldMandalaGrad)" stroke-width="0.8" stroke-dasharray="2,5" opacity="0.45"/>
+                        <use href="#outerPetal" transform="rotate(0 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(22.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(45 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(67.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(90 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(112.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(135 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(157.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(180 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(202.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(225 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(247.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(270 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(292.5 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(315 150 150)"/>
+                        <use href="#outerPetal" transform="rotate(337.5 150 150)"/>
+                    </g>
+
+                    <!-- Inner Counter-Clockwise Layer -->
+                    <g class="mandala-inner">
+                        <circle cx="150" cy="150" r="95" fill="none" stroke="url(#goldMandalaGrad)" stroke-width="1.3" opacity="0.6"/>
+                        <circle cx="150" cy="150" r="64" fill="none" stroke="url(#goldMandalaGrad)" stroke-width="1" stroke-dasharray="3,4" opacity="0.5"/>
+                        <use href="#innerPetal" transform="rotate(0 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(30 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(60 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(90 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(120 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(150 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(180 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(210 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(240 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(270 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(300 150 150)"/>
+                        <use href="#innerPetal" transform="rotate(330 150 150)"/>
+                        <!-- Central Radiant Core -->
+                        <circle cx="150" cy="150" r="44" fill="url(#mandalaCoreGlow)" stroke="url(#goldMandalaGrad)" stroke-width="1.6"/>
+                    </g>
+                </svg>
+            </div>
             
             <!-- Diya SVG + Interactive Flame -->
             <div class="relative w-48 h-36 sm:w-64 sm:h-48 mx-auto flex flex-col items-center justify-end">
@@ -476,12 +582,16 @@
         // --- 3. CANVAS FIREWORKS ENGINE ---
         const fwCanvas = document.getElementById('fireworksCanvas');
         const fwCtx = fwCanvas.getContext('2d');
+        const ptCanvas = document.getElementById('petalsCanvas');
+        const ptCtx = ptCanvas.getContext('2d');
         let fireworks = [];
         let particles = [];
 
         function resizeCanvases() {
             fwCanvas.width = window.innerWidth;
             fwCanvas.height = window.innerHeight;
+            ptCanvas.width = window.innerWidth;
+            ptCanvas.height = window.innerHeight;
             spCanvas.width = window.innerWidth;
             spCanvas.height = window.innerHeight;
         }
@@ -668,14 +778,27 @@
             }
         }
 
-        // Touch & Mouse Trackers for Sparkler
+        // Touch & Mouse Trackers for Sparkler & Petals
+        let touchClearTimeout;
+        function registerTouchCoords(x, y) {
+            touchInteractionX = x;
+            touchInteractionY = y;
+            clearTimeout(touchClearTimeout);
+            touchClearTimeout = setTimeout(() => {
+                touchInteractionX = -9999;
+                touchInteractionY = -9999;
+            }, 500);
+        }
+
         window.addEventListener('mousemove', (e) => {
             addSparkles(e.clientX, e.clientY, 2);
+            registerTouchCoords(e.clientX, e.clientY);
         });
 
         window.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
                 addSparkles(e.touches[0].clientX, e.touches[0].clientY, 3);
+                registerTouchCoords(e.touches[0].clientX, e.touches[0].clientY);
             }
         });
 
@@ -688,7 +811,120 @@
             launchFirework(e.clientX, e.clientY);
         });
 
-        // --- 5. FLOATING SKY LANTERNS ---
+        // --- 5. PUSHPA VRISHTI (FALLING MARIGOLD & ROSE PETALS) CANVAS ENGINE ---
+        let petals = [];
+        const TOTAL_PETALS = 30;
+        let touchInteractionX = -9999;
+        let touchInteractionY = -9999;
+
+        class FlowerPetal {
+            constructor(initialScatter = false) {
+                this.reset(initialScatter);
+            }
+
+            reset(initialScatter = false) {
+                this.x = Math.random() * (ptCanvas.width || window.innerWidth);
+                this.y = initialScatter ? Math.random() * (ptCanvas.height || window.innerHeight) : -20 - Math.random() * 40;
+                this.size = Math.random() * 7 + 9; // 9px to 16px
+                this.speedY = Math.random() * 1.0 + 0.7; // 0.7 to 1.7 px/frame
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.angle = Math.random() * Math.PI * 2;
+                this.angularSpeed = (Math.random() - 0.5) * 0.025;
+                this.flip = Math.random() * Math.PI;
+                this.flipSpeed = Math.random() * 0.03 + 0.015;
+                this.type = Math.random() > 0.45 ? 'marigold' : 'rose';
+                this.opacity = Math.random() * 0.3 + 0.65;
+                this.swayOffset = Math.random() * Math.PI * 2;
+                this.swaySpeed = Math.random() * 0.02 + 0.01;
+            }
+
+            update() {
+                this.swayOffset += this.swaySpeed;
+                this.x += this.speedX + Math.sin(this.swayOffset) * 0.7;
+                this.y += this.speedY;
+                this.angle += this.angularSpeed;
+                this.flip += this.flipSpeed;
+
+                // Interactive air deflection on touch / cursor
+                const dx = this.x - touchInteractionX;
+                const dy = this.y - touchInteractionY;
+                const dist = Math.hypot(dx, dy);
+                if (dist < 70) {
+                    const force = (70 - dist) / 70;
+                    this.x += (dx / dist) * force * 4.5;
+                    this.y += (dy / dist) * force * 2.5;
+                }
+
+                // Wrap around bottom & edges
+                if (this.y > ptCanvas.height + 25) {
+                    this.reset(false);
+                }
+                if (this.x < -25) this.x = ptCanvas.width + 15;
+                if (this.x > ptCanvas.width + 25) this.x = -15;
+            }
+
+            draw() {
+                ptCtx.save();
+                ptCtx.translate(this.x, this.y);
+                ptCtx.rotate(this.angle);
+                ptCtx.scale(1, Math.cos(this.flip));
+                ptCtx.globalAlpha = this.opacity;
+
+                const w = this.size;
+                const h = this.size * 1.35;
+
+                ptCtx.beginPath();
+                if (this.type === 'marigold') {
+                    // Golden Marigold Petal
+                    const grad = ptCtx.createLinearGradient(0, -h / 2, 0, h / 2);
+                    grad.addColorStop(0, '#FFE57F');
+                    grad.addColorStop(0.35, '#FFA000');
+                    grad.addColorStop(1, '#D84315');
+                    ptCtx.fillStyle = grad;
+
+                    ptCtx.moveTo(0, -h / 2);
+                    ptCtx.bezierCurveTo(w * 0.65, -h * 0.2, w * 0.75, h * 0.2, 0, h / 2);
+                    ptCtx.bezierCurveTo(-w * 0.75, h * 0.2, -w * 0.65, -h * 0.2, 0, -h / 2);
+                    ptCtx.fill();
+
+                    ptCtx.strokeStyle = 'rgba(255, 235, 120, 0.4)';
+                    ptCtx.lineWidth = 0.8;
+                    ptCtx.stroke();
+                } else {
+                    // Velvet Rose Petal
+                    const grad = ptCtx.createRadialGradient(0, -h * 0.1, 2, 0, 0, h * 0.6);
+                    grad.addColorStop(0, '#FF4081');
+                    grad.addColorStop(0.45, '#C2185B');
+                    grad.addColorStop(1, '#560027');
+                    ptCtx.fillStyle = grad;
+
+                    ptCtx.moveTo(0, -h / 2);
+                    ptCtx.bezierCurveTo(w * 0.75, -h * 0.25, w * 0.8, h * 0.25, 0, h / 2);
+                    ptCtx.bezierCurveTo(-w * 0.8, h * 0.25, -w * 0.75, -h * 0.25, 0, -h / 2);
+                    ptCtx.fill();
+                }
+
+                ptCtx.restore();
+            }
+        }
+
+        function initPetals() {
+            petals = [];
+            for (let i = 0; i < TOTAL_PETALS; i++) {
+                petals.push(new FlowerPetal(true));
+            }
+        }
+
+        function animatePetals() {
+            requestAnimationFrame(animatePetals);
+            ptCtx.clearRect(0, 0, ptCanvas.width, ptCanvas.height);
+            for (let i = 0; i < petals.length; i++) {
+                petals[i].update();
+                petals[i].draw();
+            }
+        }
+
+        // --- 6. FLOATING SKY LANTERNS ---
         function generateSkyLanterns() {
             const container = document.getElementById('lanternsContainer');
             const count = 12;
@@ -791,6 +1027,10 @@
                     );
                 }, i * 200);
             }
+            // Festive shower of extra flower petals on tap
+            for (let i = 0; i < 8; i++) {
+                petals.push(new FlowerPetal(false));
+            }
             showToast("✨ Shubh Deepavali! Light & Joy to All!");
         });
 
@@ -861,6 +1101,8 @@
             // Start Canvas Loops
             animateFireworks();
             animateSparkler();
+            initPetals();
+            animatePetals();
             generateSkyLanterns();
 
             // Attempt Music Playback (On by default)
