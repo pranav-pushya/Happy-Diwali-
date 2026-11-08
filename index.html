@@ -169,7 +169,9 @@
 </head>
 <body class="min-h-screen relative overflow-x-hidden flex flex-col justify-between select-none">
 
-    <!-- Audio Elements Synth Fallback state -->
+    <!-- Audio Player (Happy diwali.mp4 - On by default) -->
+    <audio id="bgMusic" src="Happy diwali.mp4" loop playsinline preload="auto"></audio>
+
     <!-- Background Canvas Layers -->
     <canvas id="fireworksCanvas"></canvas>
     <canvas id="sparklerCanvas"></canvas>
@@ -190,9 +192,9 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <!-- Audio Toggle Button -->
-            <button id="musicToggleBtn" title="Toggle Music & Sound Effects" class="w-11 h-11 rounded-full glass-card flex items-center justify-center text-amber-300 hover:text-white hover:border-amber-400 transition-all duration-300">
-                <i id="musicIcon" class="fa-solid fa-volume-xmark text-lg"></i>
+            <!-- Audio Toggle Button (Plays Happy diwali.mp4) -->
+            <button id="musicToggleBtn" title="Toggle Music" class="w-11 h-11 rounded-full glass-card border border-amber-400 bg-amber-500/20 flex items-center justify-center text-amber-400 hover:text-white hover:border-amber-300 transition-all duration-300">
+                <i id="musicIcon" class="fa-solid fa-volume-high text-lg"></i>
             </button>
             <!-- Share Greeting Button -->
             <button id="openShareModalBtn" class="px-4 py-2 rounded-full glass-card border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 text-sm font-semibold flex items-center gap-2 transition-all duration-300">
@@ -282,18 +284,15 @@
             </p>
 
             <!-- Action Buttons Toolbar -->
-            <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <button id="burstCrackersBtn" class="px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-diwali-crimson text-white font-bold text-sm sm:text-base pulse-btn hover:brightness-110 active:scale-95 transition-all duration-200 flex items-center gap-2">
+            <div class="flex items-center justify-center pt-2">
+                <button id="burstCrackersBtn" class="px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-diwali-crimson text-white font-bold text-sm sm:text-base pulse-btn hover:brightness-110 active:scale-95 transition-all duration-200 flex items-center gap-2 shadow-lg shadow-amber-500/20">
                     <i class="fa-solid fa-firework"></i> Launch Fireworks
-                </button>
-                <button id="customizeBtn" class="px-5 py-3 rounded-full glass-card hover:bg-amber-500/20 text-amber-300 font-semibold text-sm border border-amber-500/40 active:scale-95 transition-all duration-200 flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i> Change Name
                 </button>
             </div>
         </div>
 
         <p class="text-xs text-amber-400/60 mt-4 tracking-wide">
-            ✨ Tip: Drag mouse or tap across screen for a glowing phooljhadi sparkler trail!
+            ✨ Tip: Drag finger or tap across screen for a glowing sparkler trail!
         </p>
 
     </main>
@@ -305,6 +304,11 @@
             <path d="M0,120 L0,90 Q30,85 60,90 L60,70 Q75,40 90,70 L90,90 Q120,85 150,90 L150,50 Q175,10 200,50 L200,90 Q250,85 300,90 L300,60 Q325,25 350,60 L350,90 Q400,80 450,90 L450,40 Q480,0 510,40 L510,90 Q560,85 610,90 L610,30 Q640,-10 670,30 L670,90 Q720,85 770,90 L770,55 Q795,20 820,55 L820,90 Q870,85 920,90 L920,65 Q945,30 970,65 L970,90 Q1020,85 1070,90 L1070,75 Q1090,45 1110,75 L1110,90 L1200,90 L1200,120 Z" />
         </svg>
     </footer>
+
+    <!-- Subtle Watermark -->
+    <div class="fixed bottom-2 right-3 z-30 pointer-events-none select-none text-[10px] tracking-widest text-amber-300/40 font-mono uppercase">
+        Pranav
+    </div>
 
     <!-- MODAL 1: Input Name Prompt (If no URL query) -->
     <div id="nameModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
@@ -370,108 +374,64 @@
 
     <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
-        // --- 1. STATE & AUDIO SYSTEM (Web Audio API Synthesizer) ---
+        // --- 1. STATE & AUDIO SYSTEM (Happy diwali.mp4 - ON BY DEFAULT) ---
         let recipientName = "";
-        let audioEnabled = false;
-        let audioCtx = null;
-        let ambientSynthInterval = null;
-
-        // Initialize Web Audio Context on user interaction
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
-
-        // Sound FX Synthesizer (No external audio files required!)
-        function playSoundFx(type) {
-            if (!audioEnabled || !audioCtx) return;
-
-            try {
-                const now = audioCtx.currentTime;
-                
-                if (type === 'firework') {
-                    // Explosion Synth Sound
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(150, now);
-                    osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
-                    
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    
-                    osc.start(now);
-                    osc.stop(now + 0.4);
-
-                } else if (type === 'sparkle') {
-                    // High Pitch Sparkler Chime
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(800 + Math.random() * 600, now);
-                    osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
-                    
-                    gain.gain.setValueAtTime(0.08, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-
-                } else if (type === 'diyaChime') {
-                    // Warm Festive Harmony Chime
-                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-                        
-                        gain.gain.setValueAtTime(0.15, now + idx * 0.08);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.8);
-                        
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        
-                        osc.start(now + idx * 0.08);
-                        osc.stop(now + idx * 0.08 + 0.8);
-                    });
-                }
-            } catch (e) {
-                console.log("Audio play error:", e);
-            }
-        }
-
-        // Toggle Sound Engine
+        const bgMusic = document.getElementById('bgMusic');
         const musicToggleBtn = document.getElementById('musicToggleBtn');
         const musicIcon = document.getElementById('musicIcon');
+        let isMusicPlaying = true; // Audio is ON by default
 
-        musicToggleBtn.addEventListener('click', () => {
-            initAudio();
-            audioEnabled = !audioEnabled;
-
-            if (audioEnabled) {
-                musicIcon.className = "fa-solid fa-volume-high text-amber-400";
+        function updateMusicUI(playing) {
+            if (playing) {
+                musicIcon.className = "fa-solid fa-volume-high text-lg text-amber-400";
                 musicToggleBtn.classList.add("border-amber-400", "bg-amber-500/20");
-                showToast("Festive Sound Effects Enabled 🔔");
-                playSoundFx('diyaChime');
             } else {
-                musicIcon.className = "fa-solid fa-volume-xmark text-amber-300";
+                musicIcon.className = "fa-solid fa-volume-xmark text-lg text-amber-300/60";
                 musicToggleBtn.classList.remove("border-amber-400", "bg-amber-500/20");
-                showToast("Sound Muted 🔇");
             }
+        }
+
+        function playMusic() {
+            if (!bgMusic) return;
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                updateMusicUI(true);
+            }).catch(err => {
+                // Browser prevented autoplay before user interaction
+                console.log("Autoplay waiting for user touch gesture:", err);
+            });
+        }
+
+        function toggleMusic() {
+            if (!bgMusic) return;
+            if (bgMusic.paused) {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicUI(true);
+                    showToast("Festive Music Playing 🎵");
+                }).catch(e => console.log(e));
+            } else {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                updateMusicUI(false);
+                showToast("Music Muted 🔇");
+            }
+        }
+
+        musicToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMusic();
         });
+
+        // Unlocks autoplay on first user tap/touch anywhere on mobile
+        function unlockAudio() {
+            if (isMusicPlaying && bgMusic && bgMusic.paused) {
+                playMusic();
+            }
+        }
+        window.addEventListener('click', unlockAudio, { once: true });
+        window.addEventListener('touchstart', unlockAudio, { once: true });
+        window.addEventListener('pointerdown', unlockAudio, { once: true });
 
         // --- 2. URL PARSER & PERSONALIZATION LOGIC ---
         function getUrlParameter(name) {
@@ -560,7 +520,6 @@
                 if (this.distanceTraveled >= this.distanceToTarget) {
                     createParticles(this.tx, this.ty);
                     fireworks.splice(index, 1);
-                    playSoundFx('firework');
                 } else {
                     this.x += vx;
                     this.y += vy;
@@ -693,7 +652,6 @@
             for (let i = 0; i < count; i++) {
                 sparklerParticles.push(new SparklerParticle(x, y));
             }
-            if (Math.random() < 0.3) playSoundFx('sparkle');
         }
 
         function animateSparkler() {
@@ -785,7 +743,6 @@
 
         const mainDiyaTrigger = document.getElementById('mainDiyaTrigger');
         const burstCrackersBtn = document.getElementById('burstCrackersBtn');
-        const customizeBtn = document.getElementById('customizeBtn');
 
         function openModal(modal, card) {
             modal.classList.remove('hidden');
@@ -808,7 +765,6 @@
         // Modal Form Submission
         nameForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            initAudio();
             const enteredName = userNameInput.value.trim();
             if (enteredName) {
                 updateGreetingUI(enteredName);
@@ -827,8 +783,6 @@
 
         // Diya Trigger Action
         mainDiyaTrigger.addEventListener('click', () => {
-            initAudio();
-            playSoundFx('diyaChime');
             for (let i = 0; i < 6; i++) {
                 setTimeout(() => {
                     launchFirework(
@@ -842,7 +796,6 @@
 
         // Launch Fireworks Button
         burstCrackersBtn.addEventListener('click', () => {
-            initAudio();
             for (let i = 0; i < 7; i++) {
                 setTimeout(() => {
                     launchFirework(
@@ -851,12 +804,6 @@
                     );
                 }, i * 250);
             }
-        });
-
-        // Open Customization Modal via Button
-        customizeBtn.addEventListener('click', () => {
-            userNameInput.value = recipientName;
-            openModal(nameModal, nameModalCard);
         });
 
         // Share Modal Link Generator Logic
@@ -915,6 +862,9 @@
             animateFireworks();
             animateSparkler();
             generateSkyLanterns();
+
+            // Attempt Music Playback (On by default)
+            playMusic();
 
             // Read URL Params
             const paramName = getUrlParameter('name') || getUrlParameter('to');
